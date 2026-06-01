@@ -21,3 +21,4 @@ When starting a new project, describe what you want to build and ask Claude to p
 | File | Style | Tags |
 |------|-------|------|
 | [world-labs.md](designs/world-labs.md) | Editorial minimal, dark/light contrast, medieval engraving illustration | AI product, research lab, creative tech, spatial/3D |
+| [nick-nisi.md](designs/nick-nisi.md) | Neo-brutalist, bold typography, hard shadows, playful stickers, accessible, OKLCH accent themes | Developer portfolio, personal blog, DX tooling site |
