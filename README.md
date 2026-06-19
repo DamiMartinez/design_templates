@@ -22,3 +22,4 @@ When starting a new project, describe what you want to build and ask Claude to p
 |------|-------|------|
 | [world-labs.md](designs/world-labs.md) | Editorial minimal, dark/light contrast, medieval engraving illustration | AI product, research lab, creative tech, spatial/3D |
 | [nick-nisi.md](designs/nick-nisi.md) | Neo-brutalist, bold typography, hard shadows, playful stickers, accessible, OKLCH accent themes | Developer portfolio, personal blog, DX tooling site |
+| [ampcode.md](designs/ampcode.md) | Editorial cream, self-hosted variable fonts, flat, light/dark dual-mode, frontier-tech confidence | AI dev tools, coding agents, SaaS with editorial edge, frontier-tech startups |
