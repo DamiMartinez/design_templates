@@ -19,8 +19,8 @@
 | Selected accent | Pale Lavender | `#F6F2FD` | Selected radio card background (condition, battery, storage pickers) |
 | Success / savings | Mint bg `#94F5BC` · text `#006B40` | Savings badge ("Ahorra X €"), positive price-trend arrows |
 | Link / decorative accent | Berry Magenta | `#9D3963` | "Ofertones" nav link, occasional decorative accent text |
-| Campaign accent | Crimson Red (gradient, promo-only) | `~#C4122F → #7A1018` | Homepage hero campaign banners — swapped per promotion, not a stable brand color |
-| Highlight strip | Lime/Chartreuse | `#E3F77E` | Sitewide top promo bar, editorial ("Tecnoteca") section highlight background |
+| Campaign accent | Crimson Red (image asset, promo-only) | `~#C4122F → #7A1018` | Baked into rotating hero *campaign images* (e.g. World Cup tie-in) — not a CSS color, swaps with the marketing creative |
+| Secondary brand / mood | Lime/Chartreuse | `#E3F77E` | Confirmed real UI background token (`bg-static-brand-hi`): homepage category quick-link tiles, editorial ("Tecnoteca") title band. Stable secondary brand color, not just a promo skin |
 | Border | Warm Light Gray | `~#D9DBE0` | Hairline borders on ghost buttons, dividers, input outlines |
 
 **Color philosophy:** The functional UI (nav, buttons, cards, filters) is almost entirely near-black `#110F15` on off-white `#F8F9FC` — deliberately neutral and "boring" so it reads as trustworthy and doesn't compete with product photography. Color is reserved for meaning: mint green = money saved, light blue = reassurance/logistics, lavender = "this is your current selection." Red and lime are campaign/seasonal accents layered on top, not core brand identity — treat them as swappable promo skins.
@@ -62,7 +62,7 @@
 
 ## Visual Style
 
-- **Shadows:** none/near-none. Popovers and sticky elements rely on a hairline border or just being on a white surface over the off-white page — not drop shadows.
+- **Shadows:** near-none by default (popovers/cards rely on a hairline border or plain white-on-off-white contrast). One confirmed exception: the homepage category quick-link tiles use a faint `0 2px 4px rgba(17,15,21,0.05)` elevation shadow — subtle enough to read as "barely there," not a general pattern to apply broadly.
 - **Borders:** hairline, low-contrast gray; used on ghost/outline buttons ("Renove"), input focus states, and to separate footer sections. Product cards themselves have **no border, no shadow, no background** — they float directly on the page background (image + text stack only).
 - **Images:** product photography is full-color, clean studio shots on transparent/white; editorial article images are natural lifestyle photos (hands, real environments) with standard rounded corners.
 - **Icons:** simple outline icons (truck, shield, location pin, heart, magnifier) — functional, not decorative, always paired with a text label in info boxes.
@@ -73,18 +73,28 @@
 ## Components
 
 ### Navigation
-- Fixed/sticky white header, two-tier: a slim utility row (trust link, repair/care, "Tecnoteca" content hub, postcode selector, locale/flag) above the main row (logo left, search bar center, "Renove" trade-in button + help link + account + cart icons right).
-- Below that, a horizontal category row (Ofertones in berry/magenta with a sparkle icon as the one colored nav item, then Móviles/Portátiles/Tablets/Consolas/... in near-black, plus a catch-all "Más").
-- A dismissible lime-green (`#E3F77E`) promo strip can appear pinned above everything on scroll (e.g. discount code banner), pushing content down.
-- Mobile behavior not tested in this pass, but the two-tier + hamburger-for-"Más" pattern is standard for this density of nav.
+- `<header>` is `position: sticky; top: 0; z-index: 10`, transparent itself (each row inside paints its own white bg) — total height **187px** on desktop, and it does **not** shrink/compact on scroll (no "shrink header on scroll down" behavior).
+- **Optional promo bar above the header** (e.g. "🎉 22 € de descuento con el código CUCUESTRELLA"): near-black bg, white bold text with an underlined inline link, small circular dismiss (✕) button on the right, ~48px tall. It's a separate sticky layer *above* the header (its own stacking context) and toggles in/out on scroll — behaves like a reveal-on-scroll-up banner rather than a permanent fixture. Don't confuse this with the lime `#E3F77E` band — that color is not used here, it's used elsewhere (see Visual Style / category tiles).
+- **Row 1 (utility row):** small text links — "El compromiso de Back Market" (with a small badge/shield icon), "Reparación y cuidado", "Stop fast tech", "Tecnoteca" — left-aligned; postcode selector ("Actualiza el código postal", underlined) + country flag + locale ("Español (ES)") right-aligned. 12–14px text, near-black, no background distinction from the row below.
+- **Row 2 (main row):** logo (SVG wordmark + basket-arrow mark, ~213×24px) far left; search bar centered/flex-fill; on the right, in order — "Renove" trade-in button (outline/ghost style, icon + label), "¿Necesitas ayuda?" text link, account icon button, cart/basket icon button. All sit on one horizontal flex line, vertically centered.
+- **Row 3 (category row):** horizontal text-link list — "Ofertones" (the one colored item, berry-magenta `#9D3963` text + small sparkle icon) then Móviles, Portátiles, Tablets, Consolas, Smartwatches, Audio, Electrodomésticos, and a catch-all "Más" — all near-black `#110F15`, 14px, no active/underline state visible at rest.
+- Mobile behavior not tested in this pass, but the three-row + hamburger-for-"Más" pattern is standard for this density of nav.
 
 ### Search bar
-- Pill-shaped input (6px radius), light gray fill, magnifier icon inline on the left, placeholder text rotates through example queries ("Buscar iPhone", "Buscar MacBook", "Buscar PlayStation…"). Centered in the header, roughly 350–400px wide on desktop.
-- No visible live-suggestions were captured in this pass — treat autocomplete/typeahead as an assumption to verify if rebuilding.
+- Corrected measurement: it's a **fully rounded pill** (`border-radius: 9999px`, not 6px), background `#EDEFF3`, container ~470px wide × 40px tall, sitting centered/flex-fill in the header's main row. The `<input>` itself is transparent (`bg-transparent`) and sits inside this pill; the magnifier icon is laid out via a `flex-row-reverse` container so visually it reads icon-left, text-right despite icon being second in markup.
+- Placeholder text rotates through example product queries — observed "Buscar MacBook", "Buscar iPhone", "Buscar iPad", "Buscar PlayStation" across loads/pages, i.e. a rotating/typewriter placeholder cycling through category examples rather than one static string.
+- No visible live-suggestions dropdown was captured in this pass — treat autocomplete/typeahead as an assumption to verify if rebuilding.
 
-### Hero / Above the fold
-- Full-bleed campaign banner (red gradient in the observed instance, swaps with promotions), large bold sans headline, short subcopy line, a discount-code pill, and a black rounded CTA button ("¡Vamos!"), with a lifestyle product photo bleeding off the right edge. Carousel dots + prev/next arrows below.
-- Directly under the hero, a centered editorial-style intro block using the IvarSoft serif for a large punchline ("Donde el mundo compra tecnología reacondicionada") plus a smaller sans subline with an inline link.
+### Hero / Jumbotron (homepage top banner)
+- **This entire banner is a single flattened marketing image, not composed DOM.** The headline ("Llévate tu estrella."), subcopy, discount-code pill ("CUCUESTRELLA"), "¡Vamos!" CTA button, legal fine print, and product photo are all baked into one campaign JPG served from a CMS (Contentful) via a resizing proxy (`/cdn-cgi/image/format=auto,quality=75,width=.../https://images.ctfassets.net/...`). Confirmed by walking the DOM: none of that text/CTA exists as separate elements — searching for "¡Vamos!", the disclaimer text, or the headline as live nodes returns nothing. The whole banner is wrapped in one `<a>` (observed href: `/es-es/e/good-deals`).
+- **Practical implication for reuse:** treat the hero as a swappable seasonal ad creative (design tool + CMS territory, e.g. this instance was a World Cup tie-in), not a component to rebuild pixel-for-pixel in code. The only things that *are* real, reusable UI around it:
+  - **Carousel indicator dots:** tiny 8×8px buttons, `border-radius: 6px` (a squared-off "squircle," not a true circle), muted dark-gray `#2F3137` when inactive, solid black when active.
+  - **Prev/next arrows:** 40×40px fully circular (`border-radius: 9999px`) buttons, near-black `#110F15` bg, white icon — positioned bottom-right of the banner, outside/below the image edge.
+  - Banner is full-bleed (measured 1920px wide in a 1920px viewport), roughly 457px tall on desktop.
+- Directly below the hero sits a **lime-green quick-link category grid** — 8 tiles in a 4-col × 2-row grid (2 col × 4 row on mobile), each tile `background: #E3F77E`, `border-radius: 12px`, `padding: 16px`, a faint elevation shadow (`0 2px 4px rgba(17,15,21,0.05)`) — the only place in this pass where a real (if subtle) box-shadow was confirmed. Each tile = product image + bold centered label (Ofertones, iPhone, MacBook, iPad, Consolas, Smartphones Android, Portátiles Windows, AirPods). **Correction from earlier notes:** `#E3F77E` is not just a rotating campaign accent — it's used here as a stable, real "brand-hi / mood" background token for category art, so treat it as a legitimate secondary brand color, not only a promo skin.
+
+### Editorial intro block (below hero + category grid)
+- A centered editorial-style intro block using the IvarSoft serif for a large punchline ("Donde el mundo compra tecnología reacondicionada") plus a smaller sans subline with an inline link. This is real DOM text (unlike the hero image above it).
 
 ### Buttons
 - **Primary:** filled near-black `#110F15` bg, white text, 6px radius, medium padding (~12px), no shadow, weight 400 (not bold) — label does the work, not the button styling. Used for "Comprar", "Ver X productos", "Me suscribo".
